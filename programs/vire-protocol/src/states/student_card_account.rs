@@ -9,4 +9,3 @@ pub struct StudentCardAccount{
     pub card_bump: u8,
 }
 
-// space = 8 + 32 + 32 + 8 + 1

@@ -1,10 +1,13 @@
 use anchor_lang::prelude::*;
 
-mod states;
-mod instructions;
+pub mod states;
+pub mod instructions;
+pub mod errors;
+pub mod helpers;
 
 use states::*;
 use instructions::*;
+use helpers::*;
 
 declare_id!("9vA67c1uKekSxp9EyUHd5yLwXjPk2VyoGCshxXcHbvxF");
 
@@ -12,25 +15,45 @@ declare_id!("9vA67c1uKekSxp9EyUHd5yLwXjPk2VyoGCshxXcHbvxF");
 pub mod vire_protocol {
     use super::*;
 
-    pub fn initialize_vire(ctx: Context<InitializeVire>, transaction_fee: u8) -> Result<()> {
-        ctx.accounts.initialize_vire(transaction_fee, &ctx.bumps)?;
+    pub fn initialize_vire(ctx: Context<InitializeVire>, transaction_fee_uni: u8, transaction_fee_student: u8) -> Result<()> {
+        ctx.accounts.initialize_vire(transaction_fee_uni, transaction_fee_student, &ctx.bumps)?;
         Ok(())
     }
 
-    // pub fn initialize_uni(ctx: Context<InitializeUni>) -> Result<()> {
-    //     msg!("Greetings from: {:?}", ctx.program_id);
-    //     Ok(())
-    // }
+    pub fn edit_vire(ctx: Context<EditVire>, transaction_fee_uni: u8, transaction_fee_student: u8) -> Result<()> {
+        ctx.accounts.edit_vire(transaction_fee_uni, transaction_fee_student)?;
+        Ok(())
+    }
 
-    // pub fn initialize_student(ctx: Context<InitializeStudent>) -> Result<()> {
-    //     msg!("Greetings from: {:?}", ctx.program_id);
-    //     Ok(())
-    // }
+    pub fn initialize_uni(ctx: Context<InitializeUni>) -> Result<()> {
+        ctx.accounts.initialize_uni(&ctx.bumps)?;
+        Ok(())
+    }
 
-    // pub fn pay_tution_fee(ctx: Context<PayTutionFee>) -> Result<()> {
-    //     msg!("Greetings from: {:?}", ctx.program_id);
-    //     Ok(())
-    // }
+    pub fn add_subjects(ctx: Context<AddSubject>, tution_fee: u32, max_semester: u8, semester_months: u8, args: CreateCardCollectionArgs) -> Result<()> {
+        ctx.accounts.init_subject(tution_fee, max_semester, semester_months, &ctx.bumps)?;
+        ctx.accounts.uni_vire_fee()?;
+        ctx.accounts.make_collection(args)?;
+        Ok(())
+    }
+
+    pub fn edit_subject(ctx: Context<EditSubject>, tution_fee: u32, max_semester: u8, semester_months: u8) -> Result<()> {
+        ctx.accounts.edit_subject(tution_fee, max_semester, semester_months)?;
+        ctx.accounts.uni_vire_fee()?;
+        Ok(())
+    }
+
+    pub fn initialize_student(ctx: Context<InitializeStudent>, card_number: u8) -> Result<()> {
+        ctx.accounts.initialize_student(card_number, &ctx.bumps)?;
+        Ok(())
+    }    
+
+    pub fn pay_tution_fee(ctx: Context<PayTutionFee>, args: CardArgs) -> Result<()> {
+        ctx.accounts.initialize_card(&ctx.bumps)?;
+        ctx.accounts.pay_tution_fee()?;
+        ctx.accounts.mint_card(args)?;
+        Ok(())
+    }
 
     // pub fn unstake_card(ctx: Context<UnstakeCard>) -> Result<()> {
     //     msg!("Greetings from: {:?}", ctx.program_id);

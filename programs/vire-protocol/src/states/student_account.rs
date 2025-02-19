@@ -10,4 +10,3 @@ pub struct StudentAccount{
     pub student_bump: u8,
 }
 
-// space = 8 + 4 + 4 + 1 + 1 + 1
