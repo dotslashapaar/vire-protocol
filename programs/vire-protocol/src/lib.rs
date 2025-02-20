@@ -55,10 +55,10 @@ pub mod vire_protocol {
         Ok(())
     }
 
-    // pub fn unstake_card(ctx: Context<UnstakeCard>) -> Result<()> {
-    //     msg!("Greetings from: {:?}", ctx.program_id);
-    //     Ok(())
-    // }
+    pub fn unstake_card(ctx: Context<UnfreezeCard>) -> Result<()> {
+       ctx.accounts.unfreeze_card()?;
+       Ok(())
+    }
 }
 
 

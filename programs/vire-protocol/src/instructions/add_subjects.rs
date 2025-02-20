@@ -3,13 +3,10 @@ use anchor_spl::{associated_token::AssociatedToken, token::{transfer_checked, Tr
 use mpl_core::{
     self,
     ID as MPL_CORE_ID,
-    fetch_external_plugin_adapter_data_info,
-    fetch_plugin,
     instructions::CreateCollectionV2CpiBuilder,
     types::{
         Attribute,
         Attributes,
-        UpdateAuthority,
         Plugin,
         PluginAuthority,
         PluginAuthorityPair,

@@ -24,4 +24,8 @@ pub enum ErrorCode {
     InvalidCardNumber,
     #[msg("Card is already staked")]
     CardAlreadyStaked,
+    #[msg("Card cannot be un-frozen yet")]
+    CardCannotBeUnfrozenYet,
+    #[msg("Card is not currently frozen")]
+    CardNotFrozen,
 }
