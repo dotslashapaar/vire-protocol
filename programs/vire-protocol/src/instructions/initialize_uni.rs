@@ -16,14 +16,14 @@ pub struct InitializeUni<'info>{
         bump,
         space = 8 + UniAccount::INIT_SPACE,
     )]
-    pub uni_account: Account<'info, UniAccount>,
+    pub uni_account: Box<Account<'info, UniAccount>>,
     
     //vire
     #[account(
         seeds = [b"vire", vire_account.admin_key.key().as_ref()],
         bump = vire_account.vire_bump,
     )]
-    pub vire_account: Account<'info, VireAccount>,
+    pub vire_account: Box<Account<'info, VireAccount>>,
     
     pub system_program: Program<'info, System>,
 }
@@ -33,8 +33,8 @@ impl <'info>InitializeUni<'info> {
         // Ensure the uni_account is not already initialized
         require!(self.uni_account.uni_key == Pubkey::default(), ErrorCode::AlreadyInitialized);
     
-        // Ensure the uni_admin is authorized to initialize the uni_account
-        require!(self.uni_admin.key() == self.vire_account.admin_key, ErrorCode::Unauthorized);
+        // // Ensure the uni_admin is authorized to initialize the uni_account
+        // require!(self.uni_admin.key() == self.vire_account.admin_key, ErrorCode::Unauthorized);
     
         self.uni_account.set_inner(UniAccount { 
             uni_key: self.uni_admin.key(), 

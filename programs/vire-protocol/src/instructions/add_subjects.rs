@@ -22,7 +22,7 @@ use crate::helpers::*;
 pub struct AddSubject<'info>{
     #[account(mut)]
     pub uni_admin: Signer<'info>,//payer
-    pub mint_usdc: InterfaceAccount<'info, Mint>,
+    pub mint_usdc: Box<InterfaceAccount<'info, Mint>>,
 
     //subject
     #[account(
@@ -40,28 +40,28 @@ pub struct AddSubject<'info>{
         seeds = [b"uni", uni_account.uni_key.key().as_ref(), vire_account.key().as_ref()],
         bump = uni_account.uni_bump,
     )]
-    pub uni_account: Account<'info, UniAccount>,
+    pub uni_account: Box<Account<'info, UniAccount>>,
     
     #[account(
         mut,
         associated_token::mint = mint_usdc,
         associated_token::authority = uni_admin,
     )]
-    pub uni_ata_usdc: InterfaceAccount<'info, TokenAccount>,
+    pub uni_ata_usdc: Box<InterfaceAccount<'info, TokenAccount>>,
 
     //vire
     #[account(
         seeds = [b"vire", vire_account.admin_key.key().as_ref()],
         bump = vire_account.vire_bump,
     )]
-    pub vire_account: Account<'info, VireAccount>,
+    pub vire_account: Box<Account<'info, VireAccount>>,
 
     #[account(
         mut,
         associated_token::mint = mint_usdc,
         associated_token::authority = vire_account
     )]
-    pub treasury: InterfaceAccount<'info, TokenAccount>,
+    pub treasury: Box<InterfaceAccount<'info, TokenAccount>>,
 
     //collection
     /// CHECK: This is the collection mint. We'll create this account in the code.
@@ -84,7 +84,7 @@ impl <'info> AddSubject<'info>{
         require!(tution_fee > 0, ErrorCode::InvalidTutionFee);
     
         // Validate max_semester
-        require!(max_semester > 0 && max_semester <= 8, ErrorCode::InvalidMaxSemester);
+        require!(max_semester > 0 && max_semester <= 16, ErrorCode::InvalidMaxSemester);
     
         // Validate card_freeze_time
         require!(semester_months > 0, ErrorCode::InvalidCardFreezeTime);

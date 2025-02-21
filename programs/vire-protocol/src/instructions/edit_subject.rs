@@ -9,43 +9,43 @@ use crate::errors::ErrorCode;
 pub struct EditSubject<'info>{
     #[account(mut)]
     pub uni_admin: Signer<'info>,
-    pub mint_usdc: InterfaceAccount<'info, Mint>,
+    pub mint_usdc: Box<InterfaceAccount<'info, Mint>>,
 
     //subject
     #[account(
         mut,
-        seeds = [uni_account.key().as_ref(), &[uni_account.subject_number], vire_account.key().as_ref()],
+        seeds = [uni_account.key().as_ref(), &[subject_account.subject_code], vire_account.key().as_ref()],
         bump = subject_account.subject_bump,
     )]
-    pub subject_account: Account<'info, SubjectAccount>,
+    pub subject_account: Box<Account<'info, SubjectAccount>>,
     
     //uni
     #[account(
         seeds = [b"uni", uni_admin.key().as_ref(), vire_account.key().as_ref()],
         bump = uni_account.uni_bump,
     )]
-    pub uni_account: Account<'info, UniAccount>,
+    pub uni_account: Box<Account<'info, UniAccount>>,
     
     #[account(
         mut,
         associated_token::mint = mint_usdc,
         associated_token::authority = uni_admin,
     )]
-    pub uni_ata_usdc: InterfaceAccount<'info, TokenAccount>,
+    pub uni_ata_usdc: Box<InterfaceAccount<'info, TokenAccount>>,
 
     //vire
     #[account(
         seeds = [b"vire", vire_account.admin_key.key().as_ref()],
         bump = vire_account.vire_bump,
     )]
-    pub vire_account: Account<'info, VireAccount>,
+    pub vire_account: Box<Account<'info, VireAccount>>,
 
     #[account(
         mut,
         associated_token::mint = mint_usdc,
         associated_token::authority = vire_account
     )]
-    pub treasury: InterfaceAccount<'info, TokenAccount>,
+    pub treasury: Box<InterfaceAccount<'info, TokenAccount>>,
 
 
     pub system_program: Program<'info, System>,

@@ -14,7 +14,7 @@ pub struct EditVire<'info>{
         seeds = [b"vire", vire_account.admin_key.key().as_ref()],
         bump = vire_account.vire_bump,
     )]
-    pub vire_account: Account<'info, VireAccount>,
+    pub vire_account: Box<Account<'info, VireAccount>>,
 
     pub system_program: Program<'info, System>,
 }

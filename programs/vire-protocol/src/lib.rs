@@ -43,14 +43,19 @@ pub mod vire_protocol {
         Ok(())
     }
 
-    pub fn initialize_student(ctx: Context<InitializeStudent>, card_number: u8) -> Result<()> {
-        ctx.accounts.initialize_student(card_number, &ctx.bumps)?;
+    pub fn initialize_student(ctx: Context<InitializeStudent>) -> Result<()> {
+        ctx.accounts.initialize_student(&ctx.bumps)?;
         Ok(())
     }    
 
-    pub fn pay_tution_fee(ctx: Context<PayTutionFee>, args: CardArgs) -> Result<()> {
+    pub fn pay_tution_fee(ctx: Context<PayTutionFee>) -> Result<()> {
         ctx.accounts.initialize_card(&ctx.bumps)?;
         ctx.accounts.pay_tution_fee()?;
+        // ctx.accounts.mint_card(args)?;
+        Ok(())
+    }
+
+    pub fn mint_card(ctx: Context<MintCard>, args: CardArgs) -> Result<()> {
         ctx.accounts.mint_card(args)?;
         Ok(())
     }

@@ -20,7 +20,7 @@ pub struct UnfreezeCard<'info> {
         seeds = [student_account.key().as_ref(), &[student_account.card_number], subject_account.key().as_ref()],
         bump = student_card_account.card_bump,
     )]
-    pub student_card_account: Account<'info, StudentCardAccount>, // asset auth
+    pub student_card_account: Box<Account<'info, StudentCardAccount>>, // asset auth
 
     // Student account
     #[account(
@@ -33,32 +33,32 @@ pub struct UnfreezeCard<'info> {
         ],
         bump = student_account.student_bump,
     )]
-    pub student_account: Account<'info, StudentAccount>,
+    pub student_account: Box<Account<'info, StudentAccount>>,
 
     // Subject account
     #[account(
-        seeds = [uni_account.key().as_ref(), &[uni_account.subject_number], vire_account.key().as_ref()],
+        seeds = [uni_account.key().as_ref(), &[subject_account.subject_code], vire_account.key().as_ref()],
         bump = subject_account.subject_bump,
     )]
-    pub subject_account: Account<'info, SubjectAccount>, // update auth
+    pub subject_account: Box<Account<'info, SubjectAccount>>, // update auth
     
     // University account
     #[account(
         seeds = [b"uni", uni_account.uni_key.key().as_ref(), vire_account.key().as_ref()],
         bump = uni_account.uni_bump,
     )]
-    pub uni_account: Account<'info, UniAccount>,
+    pub uni_account: Box<Account<'info, UniAccount>>,
     
     // Vire account
     #[account(
         seeds = [b"vire", vire_account.admin_key.key().as_ref()],
         bump = vire_account.vire_bump,
     )]
-    pub vire_account: Account<'info, VireAccount>,
+    pub vire_account: Box<Account<'info, VireAccount>>,
 
     // The Asset account that represents the NFT to be unfrozen.
     #[account(mut)]
-    pub asset: Account<'info, BaseAssetV1>, // Use AssetV1 if available
+    pub asset: Box<Account<'info, BaseAssetV1>>, // Use AssetV1 if available
 
     /// CHECK: Safe because we are using it as a cpi
     #[account(address = MPL_CORE_ID)]
