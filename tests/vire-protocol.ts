@@ -10,6 +10,7 @@ import {
   fetchCollection,
   mplCore,
 } from '@metaplex-foundation/mpl-core';
+import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
 
 const mplCoreProgramId = new PublicKey(MPL_CORE_PROGRAM_ID);
 
@@ -17,6 +18,8 @@ describe("vire-protocol", () => {
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(provider);
   const program = anchor.workspace.VireProtocol as Program<VireProtocol>;
+
+  const umi = createUmi(provider.connection).use(mplCore());
 
   const admin = Keypair.generate();
   const uniAdmin = Keypair.generate();
@@ -970,15 +973,6 @@ describe("vire-protocol", () => {
   });
 
   it("Fails Un-Authorized User To Withdraws From Treasury", async () => {
-
-    await mintTo(
-      provider.connection,
-      admin,
-      mintUsdc,
-      treasury,
-      admin,
-      1000000000 // 1000 USDC
-    );
 
     try {
       await program.methods
