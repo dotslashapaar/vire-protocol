@@ -3,7 +3,7 @@ import { Program, BN } from "@coral-xyz/anchor";
 import { VireProtocol } from "../target/types/vire_protocol";
 import { PublicKey, SystemProgram, Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, TOKEN_PROGRAM_ID, createMint, getOrCreateAssociatedTokenAccount, mintTo } from "@solana/spl-token";
-import { assert } from "chai";
+import { assert, expect } from 'chai';
 import {
   MPL_CORE_PROGRAM_ID,
   fetchAsset,
@@ -444,6 +444,76 @@ describe("vire-protocol", () => {
     assert.equal(subjectState.maxSemester, 8);
     assert.equal(subjectState.semesterMonths, 4);
   });
+
+
+  //--> Trying With Umi
+  // it('Adds Subject', async () => {
+  //   const createCardCollectionParams = {
+  //     name: "Test Subject",
+  //     uri: "https://example.com"
+  //   };
+
+  //   //Config account
+  //   try {
+  //     const reviewIx = await program.methods
+  //     .addSubjects(10000, 8, 4, {
+  //       name: "Test Subject",
+  //       uri: "https://example.com"
+  //     }) // tution_fee = 10000, max_semester = 8, semesterMonths = 30
+  //     .accountsPartial({
+  //       uniAdmin: uniAdmin.publicKey,
+  //       mintUsdc,
+  //       subjectAccount,
+  //       uniAccount,
+  //       uniAtaUsdc,
+  //       vireAccount,
+  //       treasury,
+  //       collection: cardCollection.publicKey,
+  //       mplCoreProgram: mplCoreProgramId,
+  //       systemProgram: SystemProgram.programId,
+  //       tokenProgram: TOKEN_PROGRAM_ID,
+  //       associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+  //     })
+  //     .instruction();
+
+  //     const blockhashContext = await provider.connection.getLatestBlockhash();
+
+  //     const tx = new anchor.web3.Transaction({
+  //       feePayer: uniAdmin.publicKey,
+  //       blockhash: blockhashContext.blockhash,
+  //       lastValidBlockHeight: blockhashContext.lastValidBlockHeight,
+  //     }).add(reviewIx);
+
+  //     // Send the transaction, this should fail
+  //     const sig = await anchor.web3.sendAndConfirmTransaction(
+  //       provider.connection,
+  //       tx,
+  //       [admin, cardCollection],
+  //       {
+  //         skipPreflight: true,
+  //         commitment: 'finalized',
+  //       }
+  //     );
+  //   } catch (e) {
+  //     console.log(e.message);
+  //     console.log(e.logs);
+  //     assert.fail('Fails to create the Card NFT Collection');
+  //   }
+
+  //   // //Solana SDK and metaplex uses different Publickeys types
+  //   // const collectionAsset = await fetchCollection(
+  //   //   umi,
+  //   //   cardCollection.publicKey.toBase58()
+  //   // );
+
+  //   // Perform assertions to verify the asset's properties
+  //   // expect(collectionAsset).to.exist;
+  //   // assert.equal(collectionAsset.name, 'Test Subject');
+  //   // assert.equal(
+  //   //   collectionAsset.uri,
+  //   //   "https://example.com"
+  //   // );
+  // });
 
   it("Fails to Add Duplicate Subject", async () => {
 
@@ -996,57 +1066,57 @@ describe("vire-protocol", () => {
 
   });
 
-  // it("Mints Card For Student", async () => {
+  it("Mints Card For Student", async () => {
 
-  //   await program.methods
-  //     .mintCard({
-  //       name: "Test Card",
-  //       uri: "https://example.com/card"
-  //     })
-  //     .accountsPartial({
-  //       student: student.publicKey,
-  //       studentCardAccount: PublicKey.findProgramAddressSync(
-  //         [studentAccount.toBuffer(), Buffer.from([0]), subjectAccount.toBuffer()],
-  //         program.programId
-  //       )[0],
-  //       studentAccount,
-  //       subjectAccount,
-  //       uniAccount,
-  //       vireAccount,
-  //       collection: cardCollection.publicKey,
-  //       asset: cardNFT.publicKey,
-  //       mplCoreProgram: mplCoreProgramId,
-  //       systemProgram: SystemProgram.programId,
-  //     })
-  //     .signers([student, cardNFT])
-  //     .rpc();
-
-  
-  // });
-
-  // it("UnFreeze Card For Student", async () => {
-
-  //   await program.methods
-  //     .unstakeCard()
-  //     .accountsPartial({
-  //       student: student.publicKey,
-  //       studentCardAccount: PublicKey.findProgramAddressSync(
-  //         [studentAccount.toBuffer(), Buffer.from([0]), subjectAccount.toBuffer()],
-  //         program.programId
-  //       )[0],
-  //       studentAccount,
-  //       subjectAccount,
-  //       uniAccount,
-  //       vireAccount,
-  //       asset: cardNFT.publicKey,
-  //       mplCoreProgram: mplCoreProgramId,
-  //       systemProgram: SystemProgram.programId,
-  //     })
-  //     .signers([student])
-  //     .rpc();
+    await program.methods
+      .mintCard({
+        name: "Test Card",
+        uri: "https://example.com/card"
+      })
+      .accountsPartial({
+        student: student.publicKey,
+        studentCardAccount: PublicKey.findProgramAddressSync(
+          [studentAccount.toBuffer(), Buffer.from([0]), subjectAccount.toBuffer()],
+          program.programId
+        )[0],
+        studentAccount,
+        subjectAccount,
+        uniAccount,
+        vireAccount,
+        collection: cardCollection.publicKey,
+        asset: cardNFT.publicKey,
+        mplCoreProgram: mplCoreProgramId,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([student, cardNFT])
+      .rpc();
 
   
-  // });
+  });
+
+  it("UnFreeze Card For Student", async () => {
+
+    await program.methods
+      .unstakeCard()
+      .accountsPartial({
+        student: student.publicKey,
+        studentCardAccount: PublicKey.findProgramAddressSync(
+          [studentAccount.toBuffer(), Buffer.from([0]), subjectAccount.toBuffer()],
+          program.programId
+        )[0],
+        studentAccount,
+        subjectAccount,
+        uniAccount,
+        vireAccount,
+        asset: cardNFT.publicKey,
+        mplCoreProgram: mplCoreProgramId,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([student])
+      .rpc();
+
+  
+  });
 
 
 });
