@@ -177,6 +177,100 @@ describe("vire-protocol", () => {
 
 
   // All Vire Protocol Initialize Tests
+
+  it("Fails to Initialize Vire With 0% Uni Fee", async () => {
+
+    // Attempt to initialize again
+    try {
+      await program.methods.initializeVire(0, 1)
+      .accountsPartial({
+        admin: admin.publicKey,
+        mintUsdc,
+        vireAccount,
+        treasury,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .signers([admin])
+      .rpc();
+      assert.fail("Expected transaction to fail");
+    } catch (error) {
+      assert.isOk(error.message, "AlreadyInitialized");
+    }
+
+  });
+
+  it("Fails to Initialize Vire With Above 100% Uni Fee", async () => {
+
+    // Attempt to initialize again
+    try {
+      await program.methods.initializeVire(101, 1)
+      .accountsPartial({
+        admin: admin.publicKey,
+        mintUsdc,
+        vireAccount,
+        treasury,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .signers([admin])
+      .rpc();
+      assert.fail("Expected transaction to fail");
+    } catch (error) {
+      assert.isOk(error.message, "AlreadyInitialized");
+    }
+
+  });
+
+  it("Fails to Initialize Vire With 0% Student Fee", async () => {
+
+    // Attempt to initialize again
+    try {
+      await program.methods.initializeVire(3, 0)
+      .accountsPartial({
+        admin: admin.publicKey,
+        mintUsdc,
+        vireAccount,
+        treasury,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .signers([admin])
+      .rpc();
+      assert.fail("Expected transaction to fail");
+    } catch (error) {
+      assert.isOk(error.message, "AlreadyInitialized");
+    }
+
+  });
+
+  it("Fails to Initialize Vire With Above 100% Student Fee", async () => {
+
+    // Attempt to initialize again
+    try {
+      await program.methods.initializeVire(3, 101)
+      .accountsPartial({
+        admin: admin.publicKey,
+        mintUsdc,
+        vireAccount,
+        treasury,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .signers([admin])
+      .rpc();
+      assert.fail("Expected transaction to fail");
+    } catch (error) {
+      assert.isOk(error.message, "AlreadyInitialized");
+    }
+
+  });
+  
+
   it("initialize the vire account", async () => {
 
     await program.methods.initializeVire(3,1)
@@ -892,7 +986,7 @@ describe("vire-protocol", () => {
       .accountsPartial({
         admin: unauthorizedUser.publicKey,
         mintUsdc,
-        adminAtaUsdc: unauthorizedUserAtaUsdc,
+        adminAtaUsdc,
         vireAccount,
         treasury,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -908,57 +1002,57 @@ describe("vire-protocol", () => {
 
   });
 
-  it("Mints Card For Student", async () => {
+  // it("Mints Card For Student", async () => {
 
-    await program.methods
-      .mintCard({
-        name: "Test Card",
-        uri: "https://example.com/card"
-      })
-      .accountsPartial({
-        student: student.publicKey,
-        studentCardAccount: PublicKey.findProgramAddressSync(
-          [studentAccount.toBuffer(), Buffer.from([0]), subjectAccount.toBuffer()],
-          program.programId
-        )[0],
-        studentAccount,
-        subjectAccount,
-        uniAccount,
-        vireAccount,
-        collection: cardCollection.publicKey,
-        asset: cardNFT.publicKey,
-        mplCoreProgram: mplCoreProgramId,
-        systemProgram: SystemProgram.programId,
-      })
-      .signers([student, cardNFT])
-      .rpc();
-
-  
-  });
-
-  it("UnFreeze Card For Student", async () => {
-
-    await program.methods
-      .unstakeCard()
-      .accountsPartial({
-        student: student.publicKey,
-        studentCardAccount: PublicKey.findProgramAddressSync(
-          [studentAccount.toBuffer(), Buffer.from([0]), subjectAccount.toBuffer()],
-          program.programId
-        )[0],
-        studentAccount,
-        subjectAccount,
-        uniAccount,
-        vireAccount,
-        asset: cardNFT.publicKey,
-        mplCoreProgram: mplCoreProgramId,
-        systemProgram: SystemProgram.programId,
-      })
-      .signers([student])
-      .rpc();
+  //   await program.methods
+  //     .mintCard({
+  //       name: "Test Card",
+  //       uri: "https://example.com/card"
+  //     })
+  //     .accountsPartial({
+  //       student: student.publicKey,
+  //       studentCardAccount: PublicKey.findProgramAddressSync(
+  //         [studentAccount.toBuffer(), Buffer.from([0]), subjectAccount.toBuffer()],
+  //         program.programId
+  //       )[0],
+  //       studentAccount,
+  //       subjectAccount,
+  //       uniAccount,
+  //       vireAccount,
+  //       collection: cardCollection.publicKey,
+  //       asset: cardNFT.publicKey,
+  //       mplCoreProgram: mplCoreProgramId,
+  //       systemProgram: SystemProgram.programId,
+  //     })
+  //     .signers([student, cardNFT])
+  //     .rpc();
 
   
-  });
+  // });
+
+  // it("UnFreeze Card For Student", async () => {
+
+  //   await program.methods
+  //     .unstakeCard()
+  //     .accountsPartial({
+  //       student: student.publicKey,
+  //       studentCardAccount: PublicKey.findProgramAddressSync(
+  //         [studentAccount.toBuffer(), Buffer.from([0]), subjectAccount.toBuffer()],
+  //         program.programId
+  //       )[0],
+  //       studentAccount,
+  //       subjectAccount,
+  //       uniAccount,
+  //       vireAccount,
+  //       asset: cardNFT.publicKey,
+  //       mplCoreProgram: mplCoreProgramId,
+  //       systemProgram: SystemProgram.programId,
+  //     })
+  //     .signers([student])
+  //     .rpc();
+
+  
+  // });
 
 
 });

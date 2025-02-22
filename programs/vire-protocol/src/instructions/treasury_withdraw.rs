@@ -53,7 +53,7 @@ impl <'info> TreasuryWithdraw<'info>{
 
         let seeds: &[&[u8]] = &[
             b"vire",
-            self.admin.to_account_info().key.as_ref(),
+            self.vire_account.admin_key.as_ref(),
             &[self.vire_account.vire_bump],
         ];
     
