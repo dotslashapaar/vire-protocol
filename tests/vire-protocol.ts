@@ -827,5 +827,29 @@ describe("vire-protocol", () => {
   
   });
 
+  it("UnFreeze Card For Student", async () => {
+
+    await program.methods
+      .unstakeCard()
+      .accountsPartial({
+        student: student.publicKey,
+        studentCardAccount: PublicKey.findProgramAddressSync(
+          [studentAccount.toBuffer(), Buffer.from([0]), subjectAccount.toBuffer()],
+          program.programId
+        )[0],
+        studentAccount,
+        subjectAccount,
+        uniAccount,
+        vireAccount,
+        asset: cardNFT.publicKey,
+        mplCoreProgram: mplCoreProgramId,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([student])
+      .rpc();
+
+  
+  });
+
 
 });

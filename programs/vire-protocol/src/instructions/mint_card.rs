@@ -23,6 +23,7 @@ pub struct MintCard<'info>{
 
     //freeze account
     #[account(
+        mut,
         seeds = [student_account.key().as_ref(), &[student_account.card_number], subject_account.key().as_ref()],
         // seeds = [student_account.key().as_ref(), &[student_account.card_number]],
         bump = student_card_account.card_bump,
@@ -128,7 +129,7 @@ impl <'info>MintCard<'info> {
             .plugins(edition_plugin)
             .invoke_signed(signer)?; //update authority is student_card_account so we need invoke with seeds
 
-            // self.student_card_account.freeze_at = ;
+            self.student_card_account.freeze_at = Clock::get()?.unix_timestamp;
             self.student_account.staked_card = true;
             self.student_account.card_number += 1;
         Ok(())
