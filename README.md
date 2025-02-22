@@ -19,7 +19,8 @@
 
 Vire Protocol is designed to address the cumbersome and expensive process of making international tuition payments. By utilizing stablecoins and NFTs on a blockchain network (such as Solana using the Anchor framework), the protocol minimizes intermediaries, reduces fees, and introduces a transparent, secure method for verifying tuition payments.
 
-<img width="910" alt="image" src="https://github.com/user-attachments/assets/910ec3bf-4df5-4014-ade6-1b8288ea48e9" />
+<img width="674" alt="image" src="https://github.com/user-attachments/assets/d7b2a622-333c-4bcf-a779-3aab2183e1d3" />
+
 
 ## Workflow
 
@@ -47,7 +48,7 @@ Vire Protocol is designed to address the cumbersome and expensive process of mak
 - **University Partnerships:**
   - Store the number of universities partnered with.
 
-### University (1 PDA: `uni_account`)
+### University (1 PDA: `uni_account`, `sujbect_account`)
 
 - **Identification & Fee Settings:**
   - Assign each university a unique `uni_id`.
@@ -69,7 +70,8 @@ Vire Protocol is designed to address the cumbersome and expensive process of mak
   - Allow the student to unfreeze (unstake) the NFT only after the semester has ended.
 
 
-<img width="896" alt="image" src="https://github.com/user-attachments/assets/2de62710-dda3-4569-adde-b00edcc0f5a8" />
+<img width="560" alt="image" src="https://github.com/user-attachments/assets/a9a0f479-f012-4695-a90b-b7853049697f" />
+
 
 
 ## Features
