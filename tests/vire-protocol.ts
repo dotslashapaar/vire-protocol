@@ -766,7 +766,7 @@ describe("vire-protocol", () => {
   it("Edits Subject Successfully", async () => {
   
     await program.methods
-      .editSubject(15000, 6, 2) // New values: tuition=15000, max_semester=10, semester_months=2 semester_months is seconds here in testing 
+      .editSubject(15000, 6, 4) // New values: tuition=15000, max_semester=10, semester_months=2 semester_months is seconds here in testing 
       .accountsPartial({
         uniAdmin: uniAdmin.publicKey,
         mintUsdc,
@@ -785,7 +785,7 @@ describe("vire-protocol", () => {
     const subjectState = await program.account.subjectAccount.fetch(subjectAccount);
     assert.equal(subjectState.tutionFee, 15000);
     assert.equal(subjectState.maxSemester, 6);
-    assert.equal(subjectState.semesterMonths, 2);
+    assert.equal(subjectState.semesterMonths, 4);
   });
 
   it("Fails to Edit Subject with Unauthorized User", async () => {
@@ -1084,11 +1084,40 @@ describe("vire-protocol", () => {
       .rpc(); // Added skipFlight option here
   });
 
+  it("Fails to UnFreeze Card before Semester Ends", async () => {
+
+    
+    try {
+      await program.methods
+      .unfreezeCard()
+      .accountsPartial({
+        student: student.publicKey,
+        studentCardAccount,
+        studentAccount,
+        subjectAccount,
+        uniAccount,
+        vireAccount,
+        asset: cardNFT.publicKey,
+        mplCoreProgram: mplCoreProgramId,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([student])
+      .rpc();
+      assert.fail("Expected transaction to fail");
+    } catch (error) {
+      assert.isOk(error.message, "Semester is not over!");
+    }
+    
+
+  
+  });
+
+
   it("UnFreeze Card For Student", async () => {
 
     // Time for this collection is 2 seconds in testing and 2 months for mainnet
     // so sleep for 2 seconds
-    await sleep(3000);
+    await sleep(5000);
 
     await program.methods
       .unfreezeCard()
