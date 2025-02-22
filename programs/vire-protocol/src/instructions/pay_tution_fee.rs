@@ -17,8 +17,8 @@ pub struct PayTutionFee<'info>{
     #[account(
         init,
         payer = student,
-        seeds = [student_account.key().as_ref(), &[student_account.card_number], subject_account.key().as_ref()],
-        // seeds = [student_account.key().as_ref(), &[student_account.card_number]],
+        // seeds = [student_account.key().as_ref(), &[student_account.card_number], subject_account.key().as_ref()],
+        seeds = [student_account.key().as_ref(), subject_account.key().as_ref()],
         bump,
         space = 8 + StudentCardAccount::INIT_SPACE,
     )]

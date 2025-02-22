@@ -65,7 +65,7 @@ pub mod vire_protocol {
         Ok(())
     }
 
-    pub fn unstake_card(ctx: Context<UnfreezeCard>) -> Result<()> {
+    pub fn unfreeze_card(ctx: Context<UnfreezeCard>) -> Result<()> {
        ctx.accounts.unfreeze_card()?;
        Ok(())
     }
