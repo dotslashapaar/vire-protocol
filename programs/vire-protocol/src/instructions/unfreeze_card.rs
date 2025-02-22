@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use mpl_core::{
-    accounts::BaseAssetV1, instructions::UpdatePluginV1CpiBuilder, types::{FreezeDelegate, Plugin}, ID as MPL_CORE_ID
+    accounts::{BaseAssetV1, BaseCollectionV1}, instructions::UpdatePluginV1CpiBuilder, types::{FreezeDelegate, Plugin}, ID as MPL_CORE_ID
 };
 
 use crate::states::{StudentAccount, StudentCardAccount, SubjectAccount, UniAccount, VireAccount};
@@ -62,6 +62,13 @@ pub struct UnfreezeCard<'info> {
     #[account(mut)]
     pub asset: Box<Account<'info, BaseAssetV1>>, // Use AssetV1 if available
 
+    //collection
+    #[account(
+        mut,
+        constraint = collection.update_authority == subject_account.key(),
+    )]
+    pub collection: Box<Account<'info, BaseCollectionV1>>,
+
     /// CHECK: Safe because we are using it as a cpi
     #[account(address = MPL_CORE_ID)]
     pub mpl_core_program: UncheckedAccount<'info>,
@@ -108,7 +115,8 @@ impl<'info> UnfreezeCard<'info> {
         let signer_seeds = &[&subject_account_seeds[..]];
     
         UpdatePluginV1CpiBuilder::new(&self.mpl_core_program.to_account_info())
-            .asset(&self.asset.to_account_info()) // Pass Pubkey directly
+            .asset(&self.asset.to_account_info())
+            .collection(Some(&self.collection.to_account_info())) // Pass Pubkey directly
             .payer(&self.student.to_account_info())
             .authority(Some(&self.subject_account.to_account_info()))
             .system_program(&self.system_program.to_account_info())

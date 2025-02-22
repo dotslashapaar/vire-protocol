@@ -989,10 +989,6 @@ describe("vire-protocol", () => {
       .signers([student])
       .rpc();
 
-    // const studentCardState = await program.account.studentCardAccount.fetch(studentCardAccount);
-    // assert.equal(studentCardState.owner.toString(), student.publicKey.toString());
-    // assert.equal(studentCardState.owner.toString(), student.publicKey.toString());
-    // assert(studentCardState.freezeAt > 0);
   });
 
   it("Vire Admin Withdraws From Treasury", async () => {
@@ -1098,6 +1094,7 @@ describe("vire-protocol", () => {
         uniAccount,
         vireAccount,
         asset: cardNFT.publicKey,
+        collection: cardCollection.publicKey,
         mplCoreProgram: mplCoreProgramId,
         systemProgram: SystemProgram.programId,
       })
@@ -1112,6 +1109,35 @@ describe("vire-protocol", () => {
   
   });
 
+  it("Fails to Pays Tuition Fee before UnFreezing Card", async () => {
+
+    try {
+      await program.methods
+      .payTutionFee()
+      .accountsPartial({
+        student: student.publicKey,
+        mintUsdc,
+        uniAdmin: uniAdmin.publicKey,
+        studentCardAccount,
+        studentAccount,
+        studentAtaUsdc,
+        subjectAccount,
+        uniAccount,
+        uniAtaUsdc,
+        vireAccount,
+        treasury,
+        systemProgram: SystemProgram.programId,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .signers([student])
+      .rpc();
+      assert.fail("Expected transaction to fail");
+    } catch (error) {
+      assert.isOk(error.message, "UnFreeze your Card!");
+    }
+
+  });
 
   it("UnFreeze Card For Student", async () => {
 
@@ -1129,6 +1155,7 @@ describe("vire-protocol", () => {
         uniAccount,
         vireAccount,
         asset: cardNFT.publicKey,
+        collection: cardCollection.publicKey,
         mplCoreProgram: mplCoreProgramId,
         systemProgram: SystemProgram.programId,
       })
