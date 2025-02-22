@@ -25,6 +25,11 @@ pub mod vire_protocol {
         Ok(())
     }
 
+    pub fn treasury_withdraw(ctx: Context<TreasuryWithdraw>) -> Result<()> {
+        ctx.accounts.treasury_withdraw()?;
+        Ok(())
+    }
+
     pub fn initialize_uni(ctx: Context<InitializeUni>) -> Result<()> {
         ctx.accounts.initialize_uni(&ctx.bumps)?;
         Ok(())
@@ -64,6 +69,8 @@ pub mod vire_protocol {
        ctx.accounts.unfreeze_card()?;
        Ok(())
     }
+
+    
 }
 
 

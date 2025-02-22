@@ -38,6 +38,8 @@ describe("vire-protocol", () => {
   let treasury: PublicKey;
   let uniAtaUsdc: PublicKey;
   let studentAtaUsdc: PublicKey;
+  let adminAtaUsdc: PublicKey;
+  let unauthorizedUserAtaUsdc: PublicKey;
 
   const vireAccount =  PublicKey.findProgramAddressSync( [Buffer.from("vire"), admin.publicKey.toBuffer()], program.programId)[0];
   const uniAccount = PublicKey.findProgramAddressSync( [Buffer.from("uni"), uniAdmin.publicKey.toBuffer(), vireAccount.toBuffer()], program.programId)[0];
@@ -114,6 +116,20 @@ describe("vire-protocol", () => {
       student.publicKey
     )).address;
 
+    adminAtaUsdc = (await getOrCreateAssociatedTokenAccount(
+      provider.connection,
+      student,
+      mintUsdc,
+      admin.publicKey
+    )).address;
+
+    unauthorizedUserAtaUsdc = (await getOrCreateAssociatedTokenAccount(
+      provider.connection,
+      student,
+      mintUsdc,
+      unauthorizedUser.publicKey
+    )).address;
+
     // Mint USDC to student's ATA
     await mintTo(
       provider.connection,
@@ -133,6 +149,23 @@ describe("vire-protocol", () => {
       1000000000 // 1000 USDC
     );
 
+    await mintTo(
+      provider.connection,
+      admin,
+      mintUsdc,
+      adminAtaUsdc,
+      admin,
+      1000000000 // 1000 USDC
+    );
+
+    await mintTo(
+      provider.connection,
+      admin,
+      mintUsdc,
+      unauthorizedUserAtaUsdc,
+      admin,
+      1000000000 // 1000 USDC
+    );
 
 
     treasury = await anchor.utils.token.associatedAddress({
@@ -797,6 +830,82 @@ describe("vire-protocol", () => {
     // assert.equal(studentCardState.owner.toString(), student.publicKey.toString());
     // assert.equal(studentCardState.owner.toString(), student.publicKey.toString());
     // assert(studentCardState.freezeAt > 0);
+  });
+
+  it("Vire Admin Withdraws From Treasury", async () => {
+
+    await program.methods
+      .treasuryWithdraw()
+      .accountsPartial({
+        admin: admin.publicKey,
+        mintUsdc,
+        adminAtaUsdc,
+        vireAccount,
+        treasury,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([admin])
+      .rpc();
+
+  });
+
+  it("Fails Vire Admin To Withdraws 0 Amount From Treasury", async () => {
+
+    try {
+      await program.methods
+      .treasuryWithdraw()
+      .accountsPartial({
+        admin: admin.publicKey,
+        mintUsdc,
+        adminAtaUsdc,
+        vireAccount,
+        treasury,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([admin])
+      .rpc();
+      assert.fail("Expected transaction to fail");
+    } catch (error) {
+      assert.isOk(error.message, "Treasury is Empty");
+    }
+
+  });
+
+  it("Fails Un-Authorized User To Withdraws From Treasury", async () => {
+
+    await mintTo(
+      provider.connection,
+      admin,
+      mintUsdc,
+      treasury,
+      admin,
+      1000000000 // 1000 USDC
+    );
+
+    try {
+      await program.methods
+      .treasuryWithdraw()
+      .accountsPartial({
+        admin: unauthorizedUser.publicKey,
+        mintUsdc,
+        adminAtaUsdc: unauthorizedUserAtaUsdc,
+        vireAccount,
+        treasury,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([unauthorizedUser])
+      .rpc();
+      assert.fail("Expected transaction to fail");
+    } catch (error) {
+      assert.isOk(error.message, "Unauthorized");
+    }
+
   });
 
   it("Mints Card For Student", async () => {

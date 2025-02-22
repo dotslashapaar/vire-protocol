@@ -7,6 +7,7 @@ pub mod initialize_student;
 pub mod pay_tution_fee;
 pub mod mint_card;
 pub mod unfreeze_card;
+pub mod treasury_withdraw;
 
 pub use initialize_vire::*;
 pub use edit_vire::*;
@@ -17,3 +18,4 @@ pub use initialize_student::*;
 pub use pay_tution_fee::*;
 pub use mint_card::*;
 pub use unfreeze_card::*;
+pub use treasury_withdraw::*;
