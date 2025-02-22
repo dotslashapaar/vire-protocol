@@ -8,7 +8,7 @@
 - [Workflow](#workflow)
 - [Protocol Requirements](#protocol-requirements)
   - [Vire Protocol (vire_account)](#vire-protocol-vire_account)
-  - [University (uni_account)](#university-uni_account)
+  - [University (uni_account & subject_account)](#university-uni_account)
   - [Student (student_account & student_card_account)](#student-student_account--student_card_account)
 - [Features](#features)
 - [Getting Started](#getting-started)
