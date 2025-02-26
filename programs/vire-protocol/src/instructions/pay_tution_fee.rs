@@ -109,7 +109,7 @@ impl<'info> PayTutionFee<'info> {
         let tution_fee = (self.subject_account.tution_fee).checked_div(self.subject_account.max_semester as u32).unwrap();
         let vire_fee = (tution_fee.checked_div(100).unwrap()) * (self.vire_account.transaction_fee_student as u32);
         
-        let tution_fee_amount = tution_fee as u64;
+        let tution_fee_amount = (tution_fee - vire_fee) as u64;
         let vire_amount = vire_fee as u64;
     
         // Check if student_ata_usdc has sufficient balance for both transfers
