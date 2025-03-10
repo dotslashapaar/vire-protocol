@@ -23,31 +23,55 @@ describe("vire-protocol", () => {
 
   const admin = Keypair.generate();
   const uniAdmin = Keypair.generate();
+  const uniAdmin2 = Keypair.generate();
   const student = Keypair.generate();
+  const student2 = Keypair.generate();
+  const student3 = Keypair.generate();
+  const student4 = Keypair.generate();
   const unauthorizedUser = Keypair.generate();
 
   //mpl-core
   const cardCollection = Keypair.generate();
   const cardCollection2 = Keypair.generate();
+  const cardCollection3 = Keypair.generate();
+  const cardCollection4 = Keypair.generate();
 
   const cardNFT = Keypair.generate();
+  const cardNFT2 = Keypair.generate();
+  const cardNFT3 = Keypair.generate();
+  const cardNFT4 = Keypair.generate();
 
   let mintUsdc: PublicKey;
-  // let vireAccount: PublicKey;
-  // let uniAccount: PublicKey;
-  // let studentAccount: PublicKey;
-  // let subjectAccount: PublicKey;
-  // let studentCardAccount: PublicKey;
   let treasury: PublicKey;
   let uniAtaUsdc: PublicKey;
+  let uniAtaUsdc2: PublicKey;
   let studentAtaUsdc: PublicKey;
+  let studentAtaUsdc2: PublicKey;
+  let studentAtaUsdc3: PublicKey;
+  let studentAtaUsdc4: PublicKey;
   let adminAtaUsdc: PublicKey;
   let unauthorizedUserAtaUsdc: PublicKey;
 
   const vireAccount =  PublicKey.findProgramAddressSync( [Buffer.from("vire"), admin.publicKey.toBuffer()], program.programId)[0];
   const uniAccount = PublicKey.findProgramAddressSync( [Buffer.from("uni"), uniAdmin.publicKey.toBuffer(), vireAccount.toBuffer()], program.programId)[0];
+  const uniAccount2 = PublicKey.findProgramAddressSync( [Buffer.from("uni"), uniAdmin2.publicKey.toBuffer(), vireAccount.toBuffer()], program.programId)[0];
   const subjectAccount = PublicKey.findProgramAddressSync(
     [uniAccount.toBuffer(), Buffer.from([0]), vireAccount.toBuffer()],
+    program.programId
+  )[0];
+
+  const subjectAccount2 = PublicKey.findProgramAddressSync(
+    [uniAccount.toBuffer(), Buffer.from([1]), vireAccount.toBuffer()],
+    program.programId
+  )[0];
+
+  const subjectAccount3 = PublicKey.findProgramAddressSync(
+    [uniAccount2.toBuffer(), Buffer.from([0]), vireAccount.toBuffer()],
+    program.programId
+  )[0];
+
+  const subjectAccount4 = PublicKey.findProgramAddressSync(
+    [uniAccount2.toBuffer(), Buffer.from([1]), vireAccount.toBuffer()],
     program.programId
   )[0];
 
@@ -60,6 +84,34 @@ describe("vire-protocol", () => {
     ],
     program.programId
   )[0];
+  const studentAccount2 = PublicKey.findProgramAddressSync(
+    [
+      student2.publicKey.toBuffer(),
+      subjectAccount.toBuffer(),
+      uniAccount.toBuffer(),
+      vireAccount.toBuffer(),
+    ],
+    program.programId
+  )[0];
+
+  const studentAccount3 = PublicKey.findProgramAddressSync(
+    [
+      student3.publicKey.toBuffer(),
+      subjectAccount3.toBuffer(),
+      uniAccount2.toBuffer(),
+      vireAccount.toBuffer(),
+    ],
+    program.programId
+  )[0];
+  const studentAccount4 = PublicKey.findProgramAddressSync(
+    [
+      student4.publicKey.toBuffer(),
+      subjectAccount4.toBuffer(),
+      uniAccount2.toBuffer(),
+      vireAccount.toBuffer(),
+    ],
+    program.programId
+  )[0];
   
   const studentCardAccount = PublicKey.findProgramAddressSync(
     [
@@ -68,7 +120,28 @@ describe("vire-protocol", () => {
     ],
     program.programId
   )[0];
+  const studentCardAccount2 = PublicKey.findProgramAddressSync(
+    [
+      studentAccount2.toBuffer(),
+      subjectAccount.toBuffer(),
+    ],
+    program.programId
+  )[0];
 
+  const studentCardAccount3 = PublicKey.findProgramAddressSync(
+    [
+      studentAccount3.toBuffer(),
+      subjectAccount3.toBuffer(),
+    ],
+    program.programId
+  )[0];
+  const studentCardAccount4 = PublicKey.findProgramAddressSync(
+    [
+      studentAccount4.toBuffer(),
+      subjectAccount4.toBuffer(),
+    ],
+    program.programId
+  )[0];
   
 
   before(async () => {
@@ -77,10 +150,22 @@ describe("vire-protocol", () => {
       await provider.connection.requestAirdrop(admin.publicKey, 10 * LAMPORTS_PER_SOL)
     );
     await provider.connection.confirmTransaction(
-      await provider.connection.requestAirdrop(uniAdmin.publicKey, 10 * LAMPORTS_PER_SOL)
+      await provider.connection.requestAirdrop(uniAdmin.publicKey, 100 * LAMPORTS_PER_SOL)
+    );
+    await provider.connection.confirmTransaction(
+      await provider.connection.requestAirdrop(uniAdmin2.publicKey, 100 * LAMPORTS_PER_SOL)
     );
     await provider.connection.confirmTransaction(
       await provider.connection.requestAirdrop(student.publicKey, 10 * LAMPORTS_PER_SOL)
+    );
+    await provider.connection.confirmTransaction(
+      await provider.connection.requestAirdrop(student2.publicKey, 10 * LAMPORTS_PER_SOL)
+    );
+    await provider.connection.confirmTransaction(
+      await provider.connection.requestAirdrop(student3.publicKey, 10 * LAMPORTS_PER_SOL)
+    );
+    await provider.connection.confirmTransaction(
+      await provider.connection.requestAirdrop(student4.publicKey, 10 * LAMPORTS_PER_SOL)
     );
     await provider.connection.confirmTransaction(
       await provider.connection.requestAirdrop(unauthorizedUser.publicKey, 10 * LAMPORTS_PER_SOL)
@@ -111,11 +196,39 @@ describe("vire-protocol", () => {
       uniAdmin.publicKey
     )).address;
 
+    uniAtaUsdc2 = (await getOrCreateAssociatedTokenAccount(
+      provider.connection,
+      uniAdmin2,
+      mintUsdc,
+      uniAdmin2.publicKey
+    )).address;
+
     studentAtaUsdc = (await getOrCreateAssociatedTokenAccount(
       provider.connection,
       student,
       mintUsdc,
       student.publicKey
+    )).address;
+
+    studentAtaUsdc2 = (await getOrCreateAssociatedTokenAccount(
+      provider.connection,
+      student2,
+      mintUsdc,
+      student2.publicKey
+    )).address;
+
+    studentAtaUsdc3 = (await getOrCreateAssociatedTokenAccount(
+      provider.connection,
+      student3,
+      mintUsdc,
+      student3.publicKey
+    )).address;
+
+    studentAtaUsdc4 = (await getOrCreateAssociatedTokenAccount(
+      provider.connection,
+      student4,
+      mintUsdc,
+      student4.publicKey
     )).address;
 
     adminAtaUsdc = (await getOrCreateAssociatedTokenAccount(
@@ -146,7 +259,43 @@ describe("vire-protocol", () => {
       provider.connection,
       admin,
       mintUsdc,
+      studentAtaUsdc2,
+      admin,
+      1000000000 // 1000 USDC
+    );
+
+    await mintTo(
+      provider.connection,
+      admin,
+      mintUsdc,
+      studentAtaUsdc3,
+      admin,
+      1000000000 // 1000 USDC
+    );
+
+    await mintTo(
+      provider.connection,
+      admin,
+      mintUsdc,
+      studentAtaUsdc4,
+      admin,
+      1000000000 // 1000 USDC
+    );
+
+    await mintTo(
+      provider.connection,
+      admin,
+      mintUsdc,
       uniAtaUsdc,
+      admin,
+      1000000000 // 1000 USDC
+    );
+
+    await mintTo(
+      provider.connection,
+      admin,
+      mintUsdc,
+      uniAtaUsdc2,
       admin,
       1000000000 // 1000 USDC
     );
@@ -376,7 +525,7 @@ describe("vire-protocol", () => {
   });
 
 
-  it("Initializes Uni", async () => {
+  it("Initializes Uni-1", async () => {
 
     await program.methods
       .initializeUni()
@@ -395,7 +544,26 @@ describe("vire-protocol", () => {
     assert.equal(uniState.subjectNumber, 0);
   });
 
-  it("Fails to Initialize Uni with Unauthorized User", async () => {
+  it("Initializes Uni-2", async () => {
+
+    await program.methods
+      .initializeUni()
+      .accountsPartial({
+        uniAdmin: uniAdmin2.publicKey,
+        uniAccount: uniAccount2,
+        vireAccount,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([uniAdmin2])
+      .rpc();
+
+    // const uniState = await program.account.uniAccount.fetch(uniAccount);
+    // assert.equal(uniState.uniKey.toString(), uniAdmin.publicKey.toString());
+    // assert.equal(uniState.studentNumber, 0);
+    // assert.equal(uniState.subjectNumber, 0);
+  });
+
+  it("Fails to Initialize Uni-1 with Unauthorized User", async () => {
     
     try {
       await program.methods
@@ -414,13 +582,13 @@ describe("vire-protocol", () => {
     }
   });
 
-  it("Adds Subject", async () => {
+  it("Adds Subject-1 in Uni-1", async () => {
 
     await program.methods
       .addSubjects(10000, 8, 4, {
         name: "Test Subject",
         uri: "https://example.com"
-      }) // tution_fee = 10000, max_semester = 8, semesterMonths = 30
+      }) // tution_fee = 10000, max_semester = 8, semesterMonths = 4
       .accountsPartial({
         uniAdmin: uniAdmin.publicKey,
         mintUsdc,
@@ -442,6 +610,32 @@ describe("vire-protocol", () => {
     assert.equal(subjectState.tutionFee, 10000);
     assert.equal(subjectState.maxSemester, 8);
     assert.equal(subjectState.semesterMonths, 4);
+  });
+
+  it("Adds Subject-2 in Uni-1", async () => {
+
+    await program.methods
+      .addSubjects(12000, 5, 3, {
+        name: "Test Subject",
+        uri: "https://example.com"
+      }) // tution_fee = 12000, max_semester = 5, semesterMonths = 6
+      .accountsPartial({
+        uniAdmin: uniAdmin.publicKey,
+        mintUsdc,
+        subjectAccount: subjectAccount2,
+        uniAccount,
+        uniAtaUsdc,
+        vireAccount,
+        treasury,
+        collection: cardCollection2.publicKey,
+        mplCoreProgram: mplCoreProgramId,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .signers([uniAdmin, cardCollection2])
+      .rpc();
+
   });
 
 
@@ -762,11 +956,64 @@ describe("vire-protocol", () => {
     }
   });
 
+  it("Adds Subject-1 in Uni-2", async () => {
 
-  it("Edits Subject Successfully", async () => {
+    await program.methods
+      .addSubjects(1000, 5, 1, {
+        name: "Test Subject",
+        uri: "https://example.com"
+      }) // tution_fee = 1000, max_semester = 5, semesterMonths = 6
+      .accountsPartial({
+        uniAdmin: uniAdmin2.publicKey,
+        mintUsdc,
+        subjectAccount: subjectAccount3,
+        uniAccount: uniAccount2,
+        uniAtaUsdc: uniAtaUsdc2,
+        vireAccount,
+        treasury,
+        collection: cardCollection3.publicKey,
+        mplCoreProgram: mplCoreProgramId,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .signers([uniAdmin2, cardCollection3])
+      .rpc();
+
+  });
+
+  it("Adds Subject-2 in Uni-2", async () => {
+
+    await program.methods
+      .addSubjects(11000, 6, 2, {
+        name: "Test Subject",
+        uri: "https://example.com"
+      }) // tution_fee = 11000, max_semester = 5, semesterMonths = 6
+      .accountsPartial({
+        uniAdmin: uniAdmin2.publicKey,
+        mintUsdc,
+        subjectAccount: subjectAccount4,
+        uniAccount: uniAccount2,
+        uniAtaUsdc: uniAtaUsdc2,
+        vireAccount,
+        treasury,
+        collection: cardCollection4.publicKey,
+        mplCoreProgram: mplCoreProgramId,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .signers([uniAdmin2, cardCollection4])
+      .rpc();
+
+  });
+
+
+
+  it("Edits Subject-1 in Uni-1 Successfully", async () => {
   
     await program.methods
-      .editSubject(15000, 6, 4) // New values: tuition=15000, max_semester=10, semester_months=2 semester_months is seconds here in testing 
+      .editSubject(15000, 3, 6) // New values: tuition=15000, max_semester=10, semester_months=2 semester_months is seconds here in testing 
       .accountsPartial({
         uniAdmin: uniAdmin.publicKey,
         mintUsdc,
@@ -784,8 +1031,33 @@ describe("vire-protocol", () => {
   
     const subjectState = await program.account.subjectAccount.fetch(subjectAccount);
     assert.equal(subjectState.tutionFee, 15000);
-    assert.equal(subjectState.maxSemester, 6);
-    assert.equal(subjectState.semesterMonths, 4);
+    assert.equal(subjectState.maxSemester, 3);
+    assert.equal(subjectState.semesterMonths, 6);
+  });
+
+  it("Edits Subject-2 in Uni-1 Successfully", async () => {
+  
+    await program.methods
+      .editSubject(17000, 4, 3) // New values: tuition=15000, max_semester=10, semester_months=2 semester_months is seconds here in testing 
+      .accountsPartial({
+        uniAdmin: uniAdmin.publicKey,
+        mintUsdc,
+        subjectAccount: subjectAccount2,
+        uniAccount,
+        uniAtaUsdc,
+        vireAccount,
+        treasury,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .signers([uniAdmin])
+      .rpc();
+  
+    // const subjectState = await program.account.subjectAccount.fetch(subjectAccount);
+    // assert.equal(subjectState.tutionFee, 15000);
+    // assert.equal(subjectState.maxSemester, 6);
+    // assert.equal(subjectState.semesterMonths, 4);
   });
 
   it("Fails to Edit Subject with Unauthorized User", async () => {
@@ -923,7 +1195,7 @@ describe("vire-protocol", () => {
     }
   });
 
-  it("Initializes Student", async () => {
+  it("Initializes Student-1 in Subject-1 in Uni-1", async () => {
 
     await program.methods
       .initializeStudent() // card_number = 1
@@ -942,6 +1214,28 @@ describe("vire-protocol", () => {
     assert.equal(studentState.studentKey.toString(), student.publicKey.toString());
     assert.equal(studentState.stakedCard, false);
   });
+
+  it("Initializes Student-2 in Subject-1 in Uni-1 ", async () => {
+
+    await program.methods
+      .initializeStudent() // card_number = 1
+      .accountsPartial({
+        student: student2.publicKey,
+        studentAccount: studentAccount2,
+        subjectAccount,
+        uniAccount,
+        vireAccount,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([student2])
+      .rpc();
+
+    const studentState = await program.account.studentAccount.fetch(studentAccount);
+    assert.equal(studentState.studentKey.toString(), student.publicKey.toString());
+    assert.equal(studentState.stakedCard, false);
+  });
+
+  
 
   it("Fails to Initialize Student with Unauthorized User", async () => {
 
@@ -966,7 +1260,7 @@ describe("vire-protocol", () => {
   
   });
 
-  it("Pays Tuition Fee", async () => {
+  it("Student-1 Pays Tuition Fee(Uni-1)", async () => {
 
     await program.methods
       .payTutionFee()
@@ -990,6 +1284,209 @@ describe("vire-protocol", () => {
       .rpc();
 
   });
+
+  it("Mints Card For Student-1(Uni-1)", async () => {
+    await program.methods
+      .mintCard({
+        name: "Test Card",
+        uri: "https://example.com/card"
+      })
+      .accountsPartial({
+        student: student.publicKey,
+        studentCardAccount,
+        studentAccount,
+        subjectAccount,
+        uniAccount,
+        vireAccount,
+        collection: cardCollection.publicKey,
+        asset: cardNFT.publicKey,
+        mplCoreProgram: mplCoreProgramId,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([student, cardNFT])
+      .rpc(); // Added skipFlight option here
+  });
+
+  it("Student-2 Pays Tuition Fee(Uni-1)", async () => {
+
+    await program.methods
+      .payTutionFee()
+      .accountsPartial({
+        student: student2.publicKey,
+        mintUsdc,
+        uniAdmin: uniAdmin.publicKey,
+        studentCardAccount: studentCardAccount2,
+        studentAccount: studentAccount2,
+        studentAtaUsdc: studentAtaUsdc2,
+        subjectAccount,
+        uniAccount,
+        uniAtaUsdc,
+        vireAccount,
+        treasury,
+        systemProgram: SystemProgram.programId,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .signers([student2])
+      .rpc();
+
+  });
+
+  it("Mints Card For Student-2(Uni-1)", async () => {
+    await program.methods
+      .mintCard({
+        name: "Test Card",
+        uri: "https://example.com/card"
+      })
+      .accountsPartial({
+        student: student2.publicKey,
+        studentCardAccount: studentCardAccount2,
+        studentAccount: studentAccount2,
+        subjectAccount,
+        uniAccount,
+        vireAccount,
+        collection: cardCollection.publicKey,
+        asset: cardNFT2.publicKey,
+        mplCoreProgram: mplCoreProgramId,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([student2, cardNFT2])
+      .rpc(); // Added skipFlight option here
+  });
+
+  it("Initializes Student-1 in Subject-1 in Uni-2", async () => {
+
+    await program.methods
+      .initializeStudent() // card_number = 1
+      .accountsPartial({
+        student: student3.publicKey,
+        studentAccount: studentAccount3,
+        subjectAccount: subjectAccount3,
+        uniAccount: uniAccount2,
+        vireAccount,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([student3])
+      .rpc();
+
+    // const studentState = await program.account.studentAccount.fetch(studentAccount);
+    // assert.equal(studentState.studentKey.toString(), student.publicKey.toString());
+    // assert.equal(studentState.stakedCard, false);
+  });
+
+  it("Initializes Student-2 in Subject-2 in Uni-2 ", async () => {
+
+    await program.methods
+      .initializeStudent() // card_number = 1
+      .accountsPartial({
+        student: student4.publicKey,
+        studentAccount: studentAccount4,
+        subjectAccount: subjectAccount4,
+        uniAccount: uniAccount2,
+        vireAccount,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([student4])
+      .rpc();
+
+    // const studentState = await program.account.studentAccount.fetch(studentAccount);
+    // assert.equal(studentState.studentKey.toString(), student.publicKey.toString());
+    // assert.equal(studentState.stakedCard, false);
+  });
+  it("Student-1 Pays Tuition Fee(Uni-2)", async () => {
+
+    await program.methods
+      .payTutionFee()
+      .accountsPartial({
+        student: student3.publicKey,
+        mintUsdc,
+        uniAdmin: uniAdmin2.publicKey,
+        studentCardAccount: studentCardAccount3,
+        studentAccount: studentAccount3,
+        studentAtaUsdc: studentAtaUsdc3,
+        subjectAccount: subjectAccount3,
+        uniAccount: uniAccount2,
+        uniAtaUsdc: uniAtaUsdc2,
+        vireAccount,
+        treasury,
+        systemProgram: SystemProgram.programId,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .signers([student3])
+      .rpc();
+
+  });
+
+  it("Mints Card For Student-1(Uni-2)", async () => {
+    await program.methods
+      .mintCard({
+        name: "Test Card",
+        uri: "https://example.com/card"
+      })
+      .accountsPartial({
+        student: student3.publicKey,
+        studentCardAccount: studentCardAccount3,
+        studentAccount: studentAccount3,
+        subjectAccount: subjectAccount3,
+        uniAccount: uniAccount2,
+        vireAccount,
+        collection: cardCollection3.publicKey,
+        asset: cardNFT3.publicKey,
+        mplCoreProgram: mplCoreProgramId,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([student3, cardNFT3])
+      .rpc(); // Added skipFlight option here
+  });
+
+  it("Student-2 Pays Tuition Fee(Uni-2)", async () => {
+
+    await program.methods
+      .payTutionFee()
+      .accountsPartial({
+        student: student4.publicKey,
+        mintUsdc,
+        uniAdmin: uniAdmin2.publicKey,
+        studentCardAccount: studentCardAccount4,
+        studentAccount: studentAccount4,
+        studentAtaUsdc: studentAtaUsdc4,
+        subjectAccount: subjectAccount4,
+        uniAccount: uniAccount2,
+        uniAtaUsdc: uniAtaUsdc2,
+        vireAccount,
+        treasury,
+        systemProgram: SystemProgram.programId,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .signers([student4])
+      .rpc();
+
+  });
+
+  it("Mints Card For Student-2(Uni-2)", async () => {
+    await program.methods
+      .mintCard({
+        name: "Test Card",
+        uri: "https://example.com/card"
+      })
+      .accountsPartial({
+        student: student4.publicKey,
+        studentCardAccount: studentCardAccount4,
+        studentAccount: studentAccount4,
+        subjectAccount: subjectAccount4,
+        uniAccount: uniAccount2,
+        vireAccount,
+        collection: cardCollection4.publicKey,
+        asset: cardNFT4.publicKey,
+        mplCoreProgram: mplCoreProgramId,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([student4, cardNFT4])
+      .rpc(); // Added skipFlight option here
+  });
+
 
   it("Vire Admin Withdraws From Treasury", async () => {
 
@@ -1058,29 +1555,9 @@ describe("vire-protocol", () => {
 
   });
 
-  it("Mints Card For Student", async () => {
-    await program.methods
-      .mintCard({
-        name: "Test Card",
-        uri: "https://example.com/card"
-      })
-      .accountsPartial({
-        student: student.publicKey,
-        studentCardAccount,
-        studentAccount,
-        subjectAccount,
-        uniAccount,
-        vireAccount,
-        collection: cardCollection.publicKey,
-        asset: cardNFT.publicKey,
-        mplCoreProgram: mplCoreProgramId,
-        systemProgram: SystemProgram.programId,
-      })
-      .signers([student, cardNFT])
-      .rpc(); // Added skipFlight option here
-  });
+ 
 
-  it("Fails to UnFreeze Card before Semester Ends", async () => {
+  it("Fails to UnFreeze Card before Semester Ends(Student-1)", async () => {
 
     
     try {
@@ -1109,7 +1586,7 @@ describe("vire-protocol", () => {
   
   });
 
-  it("Fails to Pays Tuition Fee before UnFreezing Card", async () => {
+  it("Fails to Pays Tuition Fee before UnFreezing Card(Student-1)", async () => {
 
     try {
       await program.methods
@@ -1134,16 +1611,16 @@ describe("vire-protocol", () => {
       .rpc();
       assert.fail("Expected transaction to fail");
     } catch (error) {
-      assert.isOk(error.message, "UnFreeze your Card!");
+      assert.isOk(error.message, "Cant UnFreeze your Card!");
     }
 
   });
 
-  it("UnFreeze Card For Student", async () => {
+  it("UnFreeze Card For Student(Student-1)(Uni-1)", async () => {
 
-    // Time for this collection is 2 seconds in testing and 2 months for mainnet
-    // so sleep for 2 seconds
-    await sleep(5000);
+    // Time for this collection is 6 seconds in testing and 2 months for mainnet
+    // so sleep for 6 seconds
+    await sleep(7000);
 
     await program.methods
       .unfreezeCard()
@@ -1160,6 +1637,84 @@ describe("vire-protocol", () => {
         systemProgram: SystemProgram.programId,
       })
       .signers([student])
+      .rpc();
+
+  
+  });
+
+  it("UnFreeze Card For Student(Student-2)(Uni-1)", async () => {
+
+    // Time for this collection is 3 seconds in testing and 2 months for mainnet
+    // so sleep for 4 seconds
+    await sleep(4000);
+
+    await program.methods
+      .unfreezeCard()
+      .accountsPartial({
+        student: student2.publicKey,
+        studentCardAccount: studentCardAccount2,
+        studentAccount: studentAccount2,
+        subjectAccount,
+        uniAccount,
+        vireAccount,
+        asset: cardNFT2.publicKey,
+        collection: cardCollection.publicKey,
+        mplCoreProgram: mplCoreProgramId,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([student2])
+      .rpc();
+
+  
+  });
+
+  it("UnFreeze Card For Student(Student-1)(Uni-2)", async () => {
+
+    // Time for this collection is 1 seconds in testing and 2 months for mainnet
+    // so sleep for 2 seconds
+    await sleep(2000);
+
+    await program.methods
+      .unfreezeCard()
+      .accountsPartial({
+        student: student3.publicKey,
+        studentCardAccount: studentCardAccount3,
+        studentAccount: studentAccount3,
+        subjectAccount: subjectAccount3,
+        uniAccount: uniAccount2,
+        vireAccount,
+        asset: cardNFT3.publicKey,
+        collection: cardCollection3.publicKey,
+        mplCoreProgram: mplCoreProgramId,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([student3])
+      .rpc();
+
+  
+  });
+
+  it("UnFreeze Card For Student(Student-2)(Uni-2)", async () => {
+
+    // Time for this collection is 2 seconds in testing and 2 months for mainnet
+    // so sleep for 3 seconds
+    await sleep(3000);
+
+    await program.methods
+      .unfreezeCard()
+      .accountsPartial({
+        student: student4.publicKey,
+        studentCardAccount: studentCardAccount4,
+        studentAccount: studentAccount4,
+        subjectAccount: subjectAccount4,
+        uniAccount: uniAccount2,
+        vireAccount,
+        asset: cardNFT4.publicKey,
+        collection: cardCollection4.publicKey,
+        mplCoreProgram: mplCoreProgramId,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([student4])
       .rpc();
 
   
